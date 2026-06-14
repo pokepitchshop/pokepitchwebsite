@@ -6,7 +6,9 @@
     "build": "next build",
     "dev": "next dev",
     "lint": "next lint",
-    "start": "next start"
+    "start": "next start",
+    "sync:ebay": "tsx scripts/sync-ebay-inventory.ts",
+    "sync:ebay:dry-run": "tsx scripts/sync-ebay-inventory.ts --dry-run"
   },
   "dependencies": {
     "@hookform/resolvers": "^3.9.1",
@@ -67,8 +69,10 @@
     "@types/react-dom": "^19",
     "eslint": "9.31.0",
     "eslint-config-next": "15.4.2",
+    "fast-xml-parser": "^5.2.5",
     "postcss": "^8.5",
     "tailwindcss": "^3.4.17",
+    "tsx": "^4.20.3",
     "typescript": "^5"
   }
 }

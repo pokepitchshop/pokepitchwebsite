@@ -20,6 +20,8 @@ export const cardSchema = z.object({
   images: z.array(z.string()).min(1),
   description: z.string(),
   ebayUrl: z.string().url().optional(),
+  ebayItemId: z.string().optional(),
+  sku: z.string().optional(),
   dateAdded: z.string(),
 })
 

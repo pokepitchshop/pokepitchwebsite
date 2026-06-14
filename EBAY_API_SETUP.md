@@ -1,110 +1,121 @@
-# eBay API Integration for Customer Reviews
+# eBay Integration for PokePitchShop
 
 ## Overview
-This setup allows you to display real customer reviews from your eBay store on your website.
 
-## Current Implementation
-- ✅ **API Route Created**: `/api/ebay-reviews`
-- ✅ **Dynamic Reviews**: Reviews load from API on page load
-- ✅ **Loading States**: Skeleton loading while fetching reviews
-- ✅ **Error Handling**: Graceful fallback if API fails
+PokePitchShop syncs catalog inventory from your eBay seller account using the eBay Trading API (same APIs used by [ebay-mcp](https://github.com/YosefHayim/ebay-mcp)). Synced listings populate `data/inventory.json`, which powers `/catalog`, homepage featured cards, and SEO sitemaps.
 
-## eBay API Setup (For Real Reviews)
+## Quick Start
 
-### Step 1: Register for eBay Developer Program
-1. Go to [eBay Developer Portal](https://developer.ebay.com/)
-2. Create a developer account
-3. Register your application
-4. Get your credentials:
-   - **App ID** (Client ID)
-   - **Cert ID** (Client Secret)
-   - **Dev ID**
+### 1. eBay Developer credentials
 
-### Step 2: Environment Variables
-Add to your `.env.local` file:
-```
-EBAY_APP_ID=your-app-id-here
-EBAY_CERT_ID=your-cert-id-here
-EBAY_DEV_ID=your-dev-id-here
+1. Create an account at [eBay Developer Portal](https://developer.ebay.com/)
+2. Register an application and copy **App ID (Client ID)** and **Cert ID (Client Secret)**
+3. Copy your **RuName** from User Tokens settings
+
+### 2. OAuth user token (required)
+
+The sync script reads **your seller listings**, which requires a user refresh token.
+
+Easiest path — use the ebay-mcp setup wizard:
+
+```bash
+npm install -g ebay-mcp
+npx ebay-mcp setup
 ```
 
-### Step 3: eBay API Permissions
-You'll need to request these permissions:
-- **Trading API**: For feedback data
-- **Finding API**: For item data
-- **Feedback API**: For customer reviews
+Copy the resulting `EBAY_USER_REFRESH_TOKEN` into `.env.local`.
 
-### Step 4: Update API Route
-Replace the mock data in `/api/ebay-reviews/route.ts` with real eBay API calls.
+### 3. Configure environment
 
-## Alternative: Manual Review Management
+Copy `.env.example` to `.env.local` and fill in:
 
-If eBay API is too complex, you can manually manage reviews:
+```env
+EBAY_CLIENT_ID=your-app-id
+EBAY_CLIENT_SECRET=your-cert-id
+EBAY_ENVIRONMENT=production
+EBAY_USER_REFRESH_TOKEN=your-refresh-token
+```
 
-### Option 1: Static Reviews (Current)
-Keep the current mock data but update it with real reviews from your eBay store.
+### 4. Run sync
 
-### Option 2: Database Reviews
-Create a simple database to store and manage reviews manually.
+```bash
+npm install
+npm run sync:ebay:dry-run   # preview without writing files
+npm run sync:ebay           # update data/inventory.json + public/sitemap.xml
+npm run build               # verify site builds with new inventory
+```
 
-### Option 3: Google Reviews Integration
-Use Google My Business reviews instead of eBay reviews.
+## What the sync does
 
-## Current Features
+1. Calls eBay `GetMyeBaySelling` for all active fixed-price listings
+2. Calls `GetItem` per listing for images, description, and item specifics
+3. Maps each listing to the site `Card` schema (`lib/types/card.ts`)
+4. Preserves manually managed cards (no `ebayItemId`) and previously sold items
+5. Regenerates `public/sitemap.xml` from the merged inventory
 
-### ✅ What's Working:
-- Dynamic review loading
-- Loading states with skeleton UI
-- Error handling
-- Responsive design
-- Star ratings display
-- Customer names and dates
+## Manual overrides
 
-### 🔄 What Updates Automatically:
-- Review content
-- Customer names
-- Ratings (1-5 stars)
-- Review dates
+If eBay titles/specifics are incomplete, add per-listing overrides in `data/inventory-overrides.json`:
 
-## Testing the Integration
+```json
+{
+  "167382780779": {
+    "category": "pokemon",
+    "set": "Evolving Skies",
+    "number": "215/203",
+    "variant": "Alternate Art"
+  }
+}
+```
 
-1. **Start your development server**: `npm run dev`
-2. **Visit your website**: The reviews section will show loading states
-3. **Check the API**: Visit `/api/ebay-reviews` to see the JSON response
-4. **Verify display**: Reviews should appear after loading
+Keys can be eBay item IDs or SKUs.
 
-## Next Steps
+## Automation (GitHub Actions)
 
-### Immediate (This Week):
-1. Register for eBay Developer Program
-2. Get API credentials
-3. Test the current implementation
+Workflow: `.github/workflows/sync-ebay-inventory.yml`
 
-### Short-term (Next Month):
-1. Implement real eBay API calls
-2. Add review filtering and sorting
-3. Add review submission form
+Runs every 6 hours (and on manual dispatch). Add these repository secrets:
 
-### Long-term (Next 3 Months):
-1. Add review analytics
-2. Implement review moderation
-3. Add review response system
+| Secret | Value |
+|--------|-------|
+| `EBAY_CLIENT_ID` | App ID |
+| `EBAY_CLIENT_SECRET` | Cert ID |
+| `EBAY_USER_REFRESH_TOKEN` | OAuth refresh token |
+| `EBAY_ENVIRONMENT` | `production` (optional) |
+
+When inventory changes, the workflow commits updated `data/inventory.json` and `public/sitemap.xml`.
+
+## Scripts
+
+| Command | Description |
+|---------|-------------|
+| `npm run sync:ebay` | Full sync from eBay |
+| `npm run sync:ebay:dry-run` | Preview sync output |
+| `npm run sync:ebay -- --summary-only` | Skip per-item detail calls (faster, less metadata) |
 
 ## Troubleshooting
 
-### Common Issues:
-1. **API not responding**: Check eBay API status
-2. **CORS errors**: Ensure proper API configuration
-3. **Rate limiting**: Implement request throttling
-4. **Authentication errors**: Verify API credentials
+| Issue | Fix |
+|-------|-----|
+| Missing env vars | Ensure `.env.local` has client ID, secret, and refresh token |
+| Invalid refresh token | Re-run `npx ebay-mcp setup` and update `EBAY_USER_REFRESH_TOKEN` |
+| Empty listings | Confirm you're using production credentials and the seller account has active listings |
+| Wrong category/set | Add overrides in `data/inventory-overrides.json` |
+| Rate limits | Increase `EBAY_DETAIL_DELAY_MS` (default 150ms) |
 
-### Fallback Options:
-- Use static reviews if API fails
-- Implement caching for better performance
-- Add manual review management system
+## Files
 
-## Support
-For eBay API issues, check:
+| Path | Purpose |
+|------|---------|
+| `scripts/sync-ebay-inventory.ts` | Main sync entry point |
+| `scripts/ebay/client.ts` | OAuth + Trading API client |
+| `scripts/ebay/map-listing.ts` | eBay → Card mapping |
+| `scripts/ebay/generate-sitemap.ts` | Sitemap generator |
+| `data/inventory-overrides.json` | Optional manual field overrides |
+| `data/inventory.json` | Site catalog source of truth |
+
+## Resources
+
 - [eBay Developer Documentation](https://developer.ebay.com/docs)
-- [eBay API Forums](https://developer.ebay.com/forums/)
-- [eBay API Status](https://developer.ebay.com/status) 
+- [ebay-mcp](https://github.com/YosefHayim/ebay-mcp)
+- [eBay API Status](https://developer.ebay.com/status)
