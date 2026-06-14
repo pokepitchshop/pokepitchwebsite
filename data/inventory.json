@@ -1,0 +1,204 @@
+[
+  {
+    "id": "pokemon-base-charizard-holo",
+    "name": "Base Set Charizard",
+    "category": "pokemon",
+    "set": "Base Set",
+    "number": "4/102",
+    "variant": "Holo",
+    "condition": "LP",
+    "grade": null,
+    "price": 425.0,
+    "currency": "USD",
+    "status": "available",
+    "images": [
+      "https://images.pokemontcg.io/base1/4_hires.png"
+    ],
+    "description": "Classic Base Set Charizard holo in lightly played condition. Clean front with light edge wear consistent with age. A cornerstone card for any Pokemon collection.",
+    "ebayUrl": "https://www.ebay.com/str/tnt4sportscards",
+    "dateAdded": "2025-11-02"
+  },
+  {
+    "id": "pokemon-base-blastoise-holo",
+    "name": "Base Set Blastoise",
+    "category": "pokemon",
+    "set": "Base Set",
+    "number": "2/102",
+    "variant": "Holo",
+    "condition": "NM",
+    "grade": null,
+    "price": 185.0,
+    "currency": "USD",
+    "status": "available",
+    "images": [
+      "https://images.pokemontcg.io/base1/2_hires.png"
+    ],
+    "description": "Near mint Base Set Blastoise holo with strong centering and vibrant holo pattern. Ships in a penny sleeve and top loader.",
+    "ebayUrl": "https://www.ebay.com/str/tnt4sportscards",
+    "dateAdded": "2025-11-15"
+  },
+  {
+    "id": "pokemon-celebrations-charizard",
+    "name": "Celebrations Charizard",
+    "category": "pokemon",
+    "set": "Celebrations",
+    "number": "4/102",
+    "variant": "Classic Collection",
+    "condition": "graded",
+    "grade": {
+      "company": "PSA",
+      "value": 10
+    },
+    "price": 275.0,
+    "currency": "USD",
+    "status": "available",
+    "images": [
+      "https://images.pokemontcg.io/cel25/4_hires.png"
+    ],
+    "description": "PSA 10 Celebrations Classic Collection Charizard. Pristine slab with sharp corners and perfect centering.",
+    "ebayUrl": "https://www.ebay.com/str/tnt4sportscards",
+    "dateAdded": "2025-12-01"
+  },
+  {
+    "id": "pokemon-evolving-skies-umbreon-vmax",
+    "name": "Umbreon VMAX Alternate Art",
+    "category": "pokemon",
+    "set": "Evolving Skies",
+    "number": "215/203",
+    "variant": "Alternate Art",
+    "condition": "graded",
+    "grade": {
+      "company": "PSA",
+      "value": 9
+    },
+    "price": 650.0,
+    "currency": "USD",
+    "status": "available",
+    "images": [
+      "https://images.pokemontcg.io/swsh7/215_hires.png"
+    ],
+    "description": "Highly sought-after Moonbreon alternate art Umbreon VMAX, PSA 9. One of the most iconic modern Pokemon cards.",
+    "ebayUrl": "https://www.ebay.com/str/tnt4sportscards",
+    "dateAdded": "2025-12-10"
+  },
+  {
+    "id": "pokemon-base-pikachu",
+    "name": "Base Set Pikachu",
+    "category": "pokemon",
+    "set": "Base Set",
+    "number": "58/102",
+    "condition": "NM",
+    "grade": null,
+    "price": 45.0,
+    "currency": "USD",
+    "status": "sold",
+    "images": [
+      "https://images.pokemontcg.io/base1/58_hires.png"
+    ],
+    "description": "Near mint Base Set Pikachu. A fan favorite from the original 1999 set.",
+    "dateAdded": "2025-10-20"
+  },
+  {
+    "id": "sports-1986-fleer-jordan-rookie",
+    "name": "Michael Jordan Rookie",
+    "category": "sports",
+    "set": "1986 Fleer",
+    "number": "57",
+    "condition": "graded",
+    "grade": {
+      "company": "PSA",
+      "value": 7
+    },
+    "price": 8500.0,
+    "currency": "USD",
+    "status": "available",
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/en/thumb/9/9f/Michael_Jordan_%2857%29_Fleer.jpg/220px-Michael_Jordan_%2857%29_Fleer.jpg"
+    ],
+    "description": "1986-87 Fleer Michael Jordan rookie card, PSA 7. The most iconic basketball card in the hobby with strong eye appeal.",
+    "ebayUrl": "https://www.ebay.com/str/tnt4sportscards",
+    "dateAdded": "2025-11-28"
+  },
+  {
+    "id": "sports-2020-prizm-herbert-rookie",
+    "name": "Justin Herbert Rookie",
+    "category": "sports",
+    "set": "2020 Panini Prizm",
+    "number": "325",
+    "variant": "Base",
+    "condition": "graded",
+    "grade": {
+      "company": "PSA",
+      "value": 10
+    },
+    "price": 320.0,
+    "currency": "USD",
+    "status": "available",
+    "images": [
+      "https://i.ebayimg.com/images/g/placeholder/s-l1600.jpg"
+    ],
+    "description": "PSA 10 Justin Herbert 2020 Panini Prizm rookie. Gem mint slab of the Chargers franchise quarterback.",
+    "ebayUrl": "https://www.ebay.com/str/tnt4sportscards",
+    "dateAdded": "2025-12-05"
+  },
+  {
+    "id": "sports-2018-bowman-soto-rookie",
+    "name": "Juan Soto Rookie",
+    "category": "sports",
+    "set": "2018 Bowman Chrome",
+    "number": "1",
+    "condition": "graded",
+    "grade": {
+      "company": "BGS",
+      "value": 9.5
+    },
+    "price": 475.0,
+    "currency": "USD",
+    "status": "available",
+    "images": [
+      "https://i.ebayimg.com/images/g/placeholder/s-l1600.jpg"
+    ],
+    "description": "BGS 9.5 Juan Soto 2018 Bowman Chrome rookie. One of baseball's elite hitters in a premium grade slab.",
+    "ebayUrl": "https://www.ebay.com/str/tnt4sportscards",
+    "dateAdded": "2025-12-08"
+  },
+  {
+    "id": "sports-2023-prizm-wemby-rookie",
+    "name": "Victor Wembanyama Rookie",
+    "category": "sports",
+    "set": "2023 Panini Prizm",
+    "number": "275",
+    "variant": "Base",
+    "condition": "NM",
+    "grade": null,
+    "price": 95.0,
+    "currency": "USD",
+    "status": "available",
+    "images": [
+      "https://i.ebayimg.com/images/g/placeholder/s-l1600.jpg"
+    ],
+    "description": "Near mint Victor Wembanyama 2023 Panini Prizm rookie base. The generational NBA prospect in raw NM condition.",
+    "ebayUrl": "https://www.ebay.com/str/tnt4sportscards",
+    "dateAdded": "2026-01-12"
+  },
+  {
+    "id": "sports-1989-upper-deck-griffey-rookie",
+    "name": "Ken Griffey Jr. Rookie",
+    "category": "sports",
+    "set": "1989 Upper Deck",
+    "number": "1",
+    "condition": "graded",
+    "grade": {
+      "company": "PSA",
+      "value": 8
+    },
+    "price": 275.0,
+    "currency": "USD",
+    "status": "sold",
+    "images": [
+      "https://upload.wikimedia.org/wikipedia/en/thumb/0/0a/1989_Upper_Deck_Ken_Griffey_Jr.jpg/220px-1989_Upper_Deck_Ken_Griffey_Jr.jpg"
+    ],
+    "description": "1989 Upper Deck Ken Griffey Jr. rookie card, PSA 8. One of the most recognizable baseball cards ever produced.",
+    "dateAdded": "2025-10-05"
+  }
+]
