@@ -27,9 +27,11 @@ jobs:
         run: |
           npx tsx -e "
           import { EbayTradingClient, loadEbayConfigFromEnv } from './lib/ebay/client.ts';
-          const client = new EbayTradingClient(loadEbayConfigFromEnv());
-          const page = await client.getActiveListings(1, 5);
-          console.log('Active listings:', page.total);
+          (async () => {
+            const client = new EbayTradingClient(loadEbayConfigFromEnv());
+            const page = await client.getActiveListings(1, 5);
+            console.log('Active listings:', page.total);
+          })();
           "
 
       - name: Refresh sitemap
