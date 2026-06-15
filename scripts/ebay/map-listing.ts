@@ -14,6 +14,17 @@ const POKEMON_KEYWORDS = [
   "base set",
 ]
 
+const MTG_KEYWORDS = [
+  "mtg",
+  "magic the gathering",
+  " magic",
+  "planeswalker",
+  "instant",
+  " sorcery",
+  "artifact",
+  "enchantment",
+]
+
 const SPORTS_KEYWORDS = [
   "rookie",
   "prizm",
@@ -113,6 +124,10 @@ function stripHtml(html: string): string {
 function detectCategory(title: string, specifics: Record<string, string>): CardCategory {
   const haystack = `${title} ${Object.values(specifics).join(" ")}`.toLowerCase()
 
+  const mtgScore = MTG_KEYWORDS.reduce(
+    (score, keyword) => score + (haystack.includes(keyword) ? 1 : 0),
+    0
+  )
   const pokemonScore = POKEMON_KEYWORDS.reduce(
     (score, keyword) => score + (haystack.includes(keyword) ? 1 : 0),
     0
@@ -122,9 +137,12 @@ function detectCategory(title: string, specifics: Record<string, string>): CardC
     0
   )
 
+  if (mtgScore > 0 && mtgScore >= pokemonScore && mtgScore >= sportsScore) {
+    return "mtg"
+  }
   if (pokemonScore > sportsScore) return "pokemon"
   if (sportsScore > pokemonScore) return "sports"
-  return "sports"
+  return "mtg"
 }
 
 function parseGrade(text: string): Card["grade"] {
@@ -285,11 +303,7 @@ export function mergeWithExistingInventory(
     return true
   })
 
-  const manuallyManaged = existingCards.filter(
-    (card) => !card.ebayItemId && card.status === "available"
-  )
-
-  const merged = [...syncedCards, ...preservedSold, ...manuallyManaged]
+  const merged = [...syncedCards, ...preservedSold]
   const seen = new Set<string>()
 
   return merged.filter((card) => {

@@ -96,6 +96,7 @@ export function CatalogFilters() {
               <SelectItem value="all">All categories</SelectItem>
               <SelectItem value="pokemon">Pokemon</SelectItem>
               <SelectItem value="sports">Sports</SelectItem>
+              <SelectItem value="mtg">MTG</SelectItem>
             </SelectContent>
           </Select>
         </div>

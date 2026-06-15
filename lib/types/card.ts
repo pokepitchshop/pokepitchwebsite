@@ -8,7 +8,7 @@ export const gradeSchema = z.object({
 export const cardSchema = z.object({
   id: z.string(),
   name: z.string(),
-  category: z.enum(["pokemon", "sports"]),
+  category: z.enum(["pokemon", "sports", "mtg"]),
   set: z.string(),
   number: z.string(),
   variant: z.string().optional(),

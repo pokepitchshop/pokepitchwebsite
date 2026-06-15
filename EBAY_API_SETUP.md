@@ -20,7 +20,8 @@ Easiest path — use the ebay-mcp setup wizard:
 
 ```bash
 npm install -g ebay-mcp
-npx ebay-mcp setup
+npm run ebay:setup
+# or: npx ebay-mcp setup
 ```
 
 Copy the resulting `EBAY_USER_REFRESH_TOKEN` into `.env.local`.

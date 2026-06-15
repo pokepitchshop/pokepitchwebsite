@@ -25,7 +25,7 @@ type CatalogPageProps = {
 }
 
 function parseCategory(value?: string): CardCategory | "all" {
-  if (value === "pokemon" || value === "sports") return value
+  if (value === "pokemon" || value === "sports" || value === "mtg") return value
   return "all"
 }
 
@@ -56,8 +56,8 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
             Card Catalog
           </h1>
           <p className="mx-auto max-w-3xl text-lg text-slate-300">
-            Browse our current inventory of authentic Pokemon and sports trading
-            cards. Filter by category, type, and availability.
+            Browse our current inventory synced from eBay. Filter by category,
+            type, and availability.
           </p>
         </div>
 

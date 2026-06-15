@@ -16,6 +16,12 @@ import {
 const __dirname = dirname(fileURLToPath(import.meta.url))
 const PROJECT_ROOT = join(__dirname, "..")
 
+function applyEnvRecord(env: Record<string, string>): void {
+  for (const [key, value] of Object.entries(env)) {
+    if (!process.env[key]) process.env[key] = value
+  }
+}
+
 function loadEnvFiles(): void {
   for (const filename of [".env.local", ".env"]) {
     const path = join(PROJECT_ROOT, filename)
@@ -33,6 +39,18 @@ function loadEnvFiles(): void {
       const value = rawValue.replace(/^['"]|['"]$/g, "")
       if (!process.env[key]) process.env[key] = value
     }
+  }
+
+  const mcpPath = join(PROJECT_ROOT, ".cursor", "mcp.json")
+  if (!existsSync(mcpPath)) return
+
+  try {
+    const mcp = JSON.parse(readFileSync(mcpPath, "utf8")) as {
+      mcpServers?: { ebay?: { env?: Record<string, string> } }
+    }
+    applyEnvRecord(mcp.mcpServers?.ebay?.env ?? {})
+  } catch {
+    // Ignore invalid MCP config; .env files remain the primary source.
   }
 }
 
