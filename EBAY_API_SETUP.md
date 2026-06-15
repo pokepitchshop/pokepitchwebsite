@@ -2,33 +2,18 @@
 
 ## Overview
 
-PokePitchShop syncs catalog inventory from your eBay seller account using the eBay Trading API (same APIs used by [ebay-mcp](https://github.com/YosefHayim/ebay-mcp)). Synced listings populate `data/inventory.json`, which powers `/catalog`, homepage featured cards, and SEO sitemaps.
+The catalog loads **live from eBay** at request time (cached for 1 hour). No bulk sync of 1,600+ listings into `inventory.json` — that was slow and expensive.
 
-## Quick Start
+Flow:
 
-### 1. eBay Developer credentials
+1. `GetMyeBaySelling` fetches all listing summaries (~9 API calls for 1,642 items)
+2. Results are cached server-side via Next.js `unstable_cache`
+3. `/catalog` paginates and filters in memory (24 items per page)
+4. Each card links to its eBay listing for checkout
 
-1. Create an account at [eBay Developer Portal](https://developer.ebay.com/)
-2. Register an application and copy **App ID (Client ID)** and **Cert ID (Client Secret)**
-3. Copy your **RuName** from User Tokens settings
+## Setup
 
-### 2. OAuth user token (required)
-
-The sync script reads **your seller listings**, which requires a user refresh token.
-
-Easiest path — use the ebay-mcp setup wizard:
-
-```bash
-npm install -g ebay-mcp
-npm run ebay:setup
-# or: npx ebay-mcp setup
-```
-
-Copy the resulting `EBAY_USER_REFRESH_TOKEN` into `.env.local`.
-
-### 3. Configure environment
-
-Copy `.env.example` to `.env.local` and fill in:
+Add to `.env` or `.env.local`:
 
 ```env
 EBAY_CLIENT_ID=your-app-id
@@ -37,86 +22,46 @@ EBAY_ENVIRONMENT=production
 EBAY_USER_REFRESH_TOKEN=your-refresh-token
 ```
 
-### 4. Run sync
+Optional:
 
-```bash
-npm install
-npm run sync:ebay:dry-run   # preview without writing files
-npm run sync:ebay           # update data/inventory.json + public/sitemap.xml
-npm run build               # verify site builds with new inventory
+```env
+EBAY_CATALOG_REVALIDATE_SECONDS=3600
 ```
 
-## What the sync does
+Use the same credentials as `.cursor/mcp.json` (ebay-mcp).
 
-1. Calls eBay `GetMyeBaySelling` for all active fixed-price listings
-2. Calls `GetItem` per listing for images, description, and item specifics
-3. Maps each listing to the site `Card` schema (`lib/types/card.ts`)
-4. Preserves manually managed cards (no `ebayItemId`) and previously sold items
-5. Regenerates `public/sitemap.xml` from the merged inventory
+**Important:** eBay refresh tokens contain `#` characters. In `.env` files you **must wrap the token in double quotes**, or everything after the first `#` is treated as a comment and auth fails with `invalid_grant`:
 
-## Manual overrides
-
-If eBay titles/specifics are incomplete, add per-listing overrides in `data/inventory-overrides.json`:
-
-```json
-{
-  "167382780779": {
-    "category": "pokemon",
-    "set": "Evolving Skies",
-    "number": "215/203",
-    "variant": "Alternate Art"
-  }
-}
+```env
+EBAY_USER_REFRESH_TOKEN="v^1.1#i^1#..."
 ```
 
-Keys can be eBay item IDs or SKUs.
-
-## Automation (GitHub Actions)
-
-Workflow: `.github/workflows/sync-ebay-inventory.yml`
-
-Runs every 6 hours (and on manual dispatch). Add these repository secrets:
-
-| Secret | Value |
-|--------|-------|
-| `EBAY_CLIENT_ID` | App ID |
-| `EBAY_CLIENT_SECRET` | Cert ID |
-| `EBAY_USER_REFRESH_TOKEN` | OAuth refresh token |
-| `EBAY_ENVIRONMENT` | `production` (optional) |
-
-When inventory changes, the workflow commits updated `data/inventory.json` and `public/sitemap.xml`.
-
-## Scripts
+## Commands
 
 | Command | Description |
 |---------|-------------|
-| `npm run sync:ebay` | Full sync from eBay |
-| `npm run sync:ebay:dry-run` | Preview sync output |
-| `npm run sync:ebay -- --summary-only` | Skip per-item detail calls (faster, less metadata) |
+| `npm run dev` | Run site; catalog loads from eBay |
+| `npm run sync:ebay:sitemap` | Refresh static sitemap (core pages only) |
+| `npm run ebay:oauth-url` | Generate OAuth URL for a new refresh token |
+
+## MCP vs website
+
+- **ebay-mcp in Cursor** — interactive seller tools (`ebay_get_active_listings`, etc.)
+- **Website catalog** — `lib/ebay/catalog.ts` uses the same Trading API, cached for visitors
 
 ## Troubleshooting
 
 | Issue | Fix |
 |-------|-----|
-| Missing env vars | Ensure `.env.local` has client ID, secret, and refresh token |
-| Invalid refresh token | Re-run `npx ebay-mcp setup` and update `EBAY_USER_REFRESH_TOKEN` |
-| Empty listings | Confirm you're using production credentials and the seller account has active listings |
-| Wrong category/set | Add overrides in `data/inventory-overrides.json` |
-| Rate limits | Increase `EBAY_DETAIL_DELAY_MS` (default 150ms) |
+| Catalog shows credential error | Set `EBAY_*` vars in `.env`; restart dev server |
+| `invalid_grant` on refresh | Re-run OAuth; update `EBAY_USER_REFRESH_TOKEN` |
+| Stale prices | Lower `EBAY_CATALOG_REVALIDATE_SECONDS` or wait for cache expiry |
 
 ## Files
 
 | Path | Purpose |
 |------|---------|
-| `scripts/sync-ebay-inventory.ts` | Main sync entry point |
-| `scripts/ebay/client.ts` | OAuth + Trading API client |
-| `scripts/ebay/map-listing.ts` | eBay → Card mapping |
-| `scripts/ebay/generate-sitemap.ts` | Sitemap generator |
-| `data/inventory-overrides.json` | Optional manual field overrides |
-| `data/inventory.json` | Site catalog source of truth |
-
-## Resources
-
-- [eBay Developer Documentation](https://developer.ebay.com/docs)
-- [ebay-mcp](https://github.com/YosefHayim/ebay-mcp)
-- [eBay API Status](https://developer.ebay.com/status)
+| `lib/ebay/client.ts` | OAuth + Trading API client |
+| `lib/ebay/catalog.ts` | Cached catalog + pagination |
+| `lib/ebay/map-listing.ts` | eBay listing → site card |
+| `app/(site)/catalog/page.tsx` | Live catalog UI |

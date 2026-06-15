@@ -14,27 +14,25 @@ import {
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent } from "@/components/ui/card"
+import { getEbayCardById } from "@/lib/ebay/catalog"
 import {
   formatPrice,
-  getAllCards,
-  getCardById,
   getConditionLabel,
   isCardGraded,
 } from "@/lib/inventory"
 
+export const revalidate = 3600
+export const dynamicParams = true
+
 type CardDetailPageProps = {
   params: Promise<{ id: string }>
-}
-
-export async function generateStaticParams() {
-  return getAllCards().map((card) => ({ id: card.id }))
 }
 
 export async function generateMetadata({
   params,
 }: CardDetailPageProps): Promise<Metadata> {
   const { id } = await params
-  const card = getCardById(id)
+  const card = await getEbayCardById(id)
 
   if (!card) {
     return { title: "Card Not Found | PokePitchShop" }
@@ -56,7 +54,7 @@ export async function generateMetadata({
 
 export default async function CardDetailPage({ params }: CardDetailPageProps) {
   const { id } = await params
-  const card = getCardById(id)
+  const card = await getEbayCardById(id)
 
   if (!card) {
     notFound()
@@ -81,7 +79,9 @@ export default async function CardDetailPage({ params }: CardDetailPageProps) {
             </BreadcrumbItem>
             <BreadcrumbSeparator className="text-slate-600" />
             <BreadcrumbItem>
-              <BreadcrumbPage className="text-white">{card.name}</BreadcrumbPage>
+              <BreadcrumbPage className="line-clamp-1 text-white">
+                {card.name}
+              </BreadcrumbPage>
             </BreadcrumbItem>
           </BreadcrumbList>
         </Breadcrumb>
@@ -96,21 +96,6 @@ export default async function CardDetailPage({ params }: CardDetailPageProps) {
                 </div>
               )}
             </div>
-            {card.images.length > 1 && (
-              <div className="grid grid-cols-4 gap-2">
-                {card.images.slice(1).map((image, index) => (
-                  <div
-                    key={image}
-                    className="aspect-square overflow-hidden rounded-md border border-slate-700"
-                  >
-                    <CardImage
-                      src={image}
-                      alt={`${card.name} image ${index + 2}`}
-                    />
-                  </div>
-                ))}
-              </div>
-            )}
           </div>
 
           <div>
@@ -141,42 +126,18 @@ export default async function CardDetailPage({ params }: CardDetailPageProps) {
             <h1 className="mb-2 text-3xl font-bold text-white md:text-4xl">
               {card.name}
             </h1>
+            {card.sku && (
+              <p className="mb-4 text-sm text-slate-500">SKU: {card.sku}</p>
+            )}
             <p className="mb-6 text-lg text-slate-400">
-              {card.set} · #{card.number}
+              {card.set}
+              {card.number ? ` · #${card.number}` : ""}
               {card.variant ? ` · ${card.variant}` : ""}
             </p>
 
             <p className="mb-8 text-3xl font-bold text-green-400">
               {formatPrice(card.price, card.currency)}
             </p>
-
-            <Card className="mb-8 border-slate-700 bg-slate-800">
-              <CardContent className="space-y-3 p-6">
-                <h2 className="text-lg font-semibold text-white">Details</h2>
-                <dl className="grid grid-cols-2 gap-x-4 gap-y-3 text-sm">
-                  <dt className="text-slate-400">Set</dt>
-                  <dd className="text-white">{card.set}</dd>
-                  <dt className="text-slate-400">Number</dt>
-                  <dd className="text-white">{card.number}</dd>
-                  {card.variant && (
-                    <>
-                      <dt className="text-slate-400">Variant</dt>
-                      <dd className="text-white">{card.variant}</dd>
-                    </>
-                  )}
-                  <dt className="text-slate-400">Condition</dt>
-                  <dd className="text-white">{getConditionLabel(card)}</dd>
-                  <dt className="text-slate-400">Added</dt>
-                  <dd className="text-white">
-                    {new Date(card.dateAdded).toLocaleDateString("en-US", {
-                      year: "numeric",
-                      month: "long",
-                      day: "numeric",
-                    })}
-                  </dd>
-                </dl>
-              </CardContent>
-            </Card>
 
             <p className="mb-8 leading-relaxed text-slate-300">
               {card.description}

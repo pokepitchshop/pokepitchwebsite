@@ -1,10 +1,16 @@
 import Script from "next/script"
-import { getFeaturedCards } from "@/lib/inventory"
+import { getFeaturedEbayCards } from "@/lib/ebay/catalog"
 
 const EBAY_STORE_URL = "https://www.ebay.com/str/tnt4sportscards"
 
-export function HomeStructuredData() {
-  const featuredCards = getFeaturedCards(6)
+export async function HomeStructuredData() {
+  let featuredCards: Awaited<ReturnType<typeof getFeaturedEbayCards>> = []
+
+  try {
+    featuredCards = await getFeaturedEbayCards(6)
+  } catch {
+    featuredCards = []
+  }
 
   const structuredData = {
     "@context": "https://schema.org",
@@ -47,7 +53,7 @@ export function HomeStructuredData() {
                 : "https://schema.org/SoldOut",
             priceCurrency: card.currency,
             price: card.price.toFixed(2),
-            url: `https://pokepitchshop.com/catalog/${card.id}`,
+            url: card.ebayUrl ?? `https://pokepitchshop.com/catalog/${card.id}`,
             seller: {
               "@type": "Organization",
               name: "PokePitchShop",

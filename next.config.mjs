@@ -8,6 +8,10 @@ const nextConfig = {
   },
   images: {
     unoptimized: true,
+    remotePatterns: [
+      { protocol: "https", hostname: "i.ebayimg.com" },
+      { protocol: "https", hostname: "**.ebayimg.com" },
+    ],
   },
 }
 

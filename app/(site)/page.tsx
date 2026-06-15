@@ -12,13 +12,19 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card"
-import { getFeaturedCards } from "@/lib/inventory"
+import { getFeaturedEbayCards } from "@/lib/ebay/catalog"
 import { HomeStructuredData } from "@/components/home-structured-data"
 
 const EBAY_STORE_URL = "https://www.ebay.com/str/tnt4sportscards"
 
-export default function HomePage() {
-  const featuredCards = getFeaturedCards(6)
+export default async function HomePage() {
+  let featuredCards: Awaited<ReturnType<typeof getFeaturedEbayCards>> = []
+
+  try {
+    featuredCards = await getFeaturedEbayCards(6)
+  } catch {
+    featuredCards = []
+  }
 
   return (
     <>
@@ -225,11 +231,17 @@ export default function HomePage() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-            {featuredCards.map((card) => (
-              <CardTile key={card.id} card={card} />
-            ))}
-          </div>
+          {featuredCards.length > 0 ? (
+            <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+              {featuredCards.map((card) => (
+                <CardTile key={card.id} card={card} />
+              ))}
+            </div>
+          ) : (
+            <p className="text-center text-slate-400">
+              Featured listings load from eBay when credentials are configured.
+            </p>
+          )}
 
           <div className="mt-12 text-center">
             <Button
