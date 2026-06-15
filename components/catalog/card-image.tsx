@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { ImageIcon } from "lucide-react"
+import { upgradeEbayImageUrl } from "@/lib/ebay/image-url"
 import { cn } from "@/lib/utils"
 
 type CardImageProps = {
@@ -12,6 +13,7 @@ type CardImageProps = {
 
 export function CardImage({ src, alt, className }: CardImageProps) {
   const [hasError, setHasError] = useState(false)
+  const imageSrc = upgradeEbayImageUrl(src) ?? src
 
   if (hasError) {
     return (
@@ -32,7 +34,7 @@ export function CardImage({ src, alt, className }: CardImageProps) {
   return (
     // eslint-disable-next-line @next/next/no-img-element
     <img
-      src={src}
+      src={imageSrc}
       alt={alt}
       className={cn("h-full w-full object-cover", className)}
       onError={() => setHasError(true)}

@@ -1,5 +1,6 @@
 import type { Card, CardCategory } from "@/lib/types/card"
 import type { ActiveListingSummary } from "@/lib/ebay/client"
+import { upgradeEbayImageUrl, upgradeEbayImageUrls } from "@/lib/ebay/image-url"
 
 const PLACEHOLDER_IMAGE =
   "https://i.ebayimg.com/images/g/placeholder/s-l1600.jpg"
@@ -126,7 +127,9 @@ export function mapSummaryToCard(summary: ActiveListingSummary): Card {
       summary.quantityAvailable > 0 || summary.quantity > 0
         ? "available"
         : "sold",
-    images: [summary.imageUrl || PLACEHOLDER_IMAGE],
+    images: [
+      upgradeEbayImageUrl(summary.imageUrl) ?? PLACEHOLDER_IMAGE,
+    ],
     description: `${summary.title} available from PokePitchShop. Buy on eBay with buyer protection.`,
     ebayUrl: `https://www.ebay.com/itm/${summary.itemId}`,
     ebayItemId: summary.itemId,
@@ -208,14 +211,18 @@ function getImages(item: Record<string, unknown>, summary: ActiveListingSummary)
   const pictureUrls = pictureDetails?.PictureURL
 
   if (Array.isArray(pictureUrls)) {
-    const urls = pictureUrls.map(stringValue).filter(Boolean)
+    const urls = upgradeEbayImageUrls(
+      pictureUrls.map(stringValue).filter(Boolean)
+    )
     if (urls.length > 0) return urls
   }
 
-  const single = stringValue(pictureUrls)
+  const single = upgradeEbayImageUrl(stringValue(pictureUrls))
   if (single) return [single]
 
-  if (summary.imageUrl) return [summary.imageUrl]
+  if (summary.imageUrl) {
+    return [upgradeEbayImageUrl(summary.imageUrl) ?? summary.imageUrl]
+  }
   return [PLACEHOLDER_IMAGE]
 }
 

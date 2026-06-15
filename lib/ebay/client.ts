@@ -1,4 +1,5 @@
 import { XMLBuilder, XMLParser } from "fast-xml-parser"
+import { upgradeEbayImageUrl } from "@/lib/ebay/image-url"
 
 const COMPAT_LEVEL = "1451"
 const SITE_ID = "0"
@@ -48,21 +49,23 @@ function stringValue(value: unknown): string {
 }
 
 function getImageUrl(item: Record<string, unknown>): string | undefined {
-  const galleryUrl = stringValue(item.GalleryURL)
+  const galleryUrl = upgradeEbayImageUrl(stringValue(item.GalleryURL))
   if (galleryUrl) return galleryUrl
 
   const pictureDetails = isRecord(item.PictureDetails) ? item.PictureDetails : null
   const pictureUrls = pictureDetails?.PictureURL
 
   if (Array.isArray(pictureUrls)) {
-    const first = stringValue(pictureUrls[0])
+    const first = upgradeEbayImageUrl(stringValue(pictureUrls[0]))
     if (first) return first
   }
 
-  const single = stringValue(pictureUrls)
+  const single = upgradeEbayImageUrl(stringValue(pictureUrls))
   if (single) return single
 
-  const galleryFromDetails = stringValue(pictureDetails?.GalleryURL)
+  const galleryFromDetails = upgradeEbayImageUrl(
+    stringValue(pictureDetails?.GalleryURL)
+  )
   if (galleryFromDetails) return galleryFromDetails
 
   return undefined
