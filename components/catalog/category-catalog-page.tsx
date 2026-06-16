@@ -6,25 +6,21 @@ import { CardTile } from "@/components/catalog/card-tile"
 import { CatalogFilters } from "@/components/catalog/catalog-filters"
 import { CatalogPagination } from "@/components/catalog/catalog-pagination"
 import { getCatalogPage } from "@/lib/ebay/catalog"
+import { CATEGORY_SEO_COPY } from "@/lib/seo/category-copy"
 import { buildItemListSchema } from "@/lib/seo/product-schema"
 import { SITE_URL } from "@/lib/seo/constants"
 import type { CardCategory, CardStatus, GradedFilter } from "@/lib/types/card"
 
 export const revalidate = 3600
 
-type CatalogPageProps = {
+type CategoryCatalogPageProps = {
+  category: CardCategory
   searchParams: Promise<{
-    category?: string
     status?: string
     graded?: string
     q?: string
     page?: string
   }>
-}
-
-function parseCategory(value?: string): CardCategory | "all" {
-  if (value === "pokemon" || value === "sports" || value === "mtg") return value
-  return "all"
 }
 
 function parseStatus(value?: string): CardStatus | "all" {
@@ -42,60 +38,49 @@ function parsePage(value?: string): number {
   return Number.isFinite(page) && page > 0 ? Math.floor(page) : 1
 }
 
-function hasActiveFilters(params: {
-  category?: string
-  status?: string
-  graded?: string
-  q?: string
-}): boolean {
-  return (
-    (params.category && params.category !== "all") ||
-    (params.status && params.status !== "all") ||
-    (params.graded && params.graded !== "all") ||
-    Boolean(params.q?.trim())
-  )
+export function buildCategoryMetadata(category: CardCategory): Metadata {
+  const copy = CATEGORY_SEO_COPY[category]
+  const canonical = `/catalog/${category}`
+
+  return {
+    title: copy.title,
+    description: copy.description,
+    alternates: { canonical },
+    openGraph: {
+      title: copy.title,
+      description: copy.description,
+      url: `${SITE_URL}${canonical}`,
+    },
+    robots: { index: true, follow: true },
+  }
 }
 
-export async function generateMetadata({
-  searchParams,
-}: CatalogPageProps): Promise<Metadata> {
+export async function buildCategoryPageMetadata(
+  category: CardCategory,
+  searchParams: CategoryCatalogPageProps["searchParams"]
+): Promise<Metadata> {
   const params = await searchParams
   const page = parsePage(params.page)
-  const category = parseCategory(params.category)
-  const filtered = hasActiveFilters(params)
+  const base = buildCategoryMetadata(category)
 
-  const base: Metadata = {
-    title: "Card Catalog | PokePitchShop",
-    description:
-      "Browse live inventory synced from our eBay store. Filter by category and search listings.",
-    alternates: {
-      canonical:
-        category !== "all" && !filtered
-          ? `/catalog/${category}`
-          : "/catalog",
-    },
-    openGraph: {
-      title: "Card Catalog | PokePitchShop",
-      description:
-        "Browse live inventory synced from our eBay store. Filter by category and search listings.",
-      url: `${SITE_URL}/catalog`,
-    },
-  }
-
-  if (page > 1 || (filtered && category === "all")) {
+  if (page > 1) {
     return {
       ...base,
       robots: { index: false, follow: true },
-      alternates: { canonical: "/catalog" },
+      alternates: { canonical: `/catalog/${category}` },
     }
   }
 
   return base
 }
 
-export default async function CatalogPage({ searchParams }: CatalogPageProps) {
+export async function CategoryCatalogPage({
+  category,
+  searchParams,
+}: CategoryCatalogPageProps) {
   const params = await searchParams
   const page = parsePage(params.page)
+  const copy = CATEGORY_SEO_COPY[category]
 
   let catalog = {
     cards: [] as Awaited<ReturnType<typeof getCatalogPage>>["cards"],
@@ -108,7 +93,7 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
 
   try {
     catalog = await getCatalogPage({
-      category: parseCategory(params.category),
+      category,
       status: parseStatus(params.status),
       graded: parseGraded(params.graded),
       query: params.q ?? "",
@@ -122,20 +107,17 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
         : "Unable to load eBay inventory right now."
   }
 
+  const listUrl = `${SITE_URL}/catalog/${category}`
   const itemListSchema =
     page === 1 && catalog.cards.length > 0
-      ? buildItemListSchema(
-          catalog.cards,
-          "Card Catalog",
-          `${SITE_URL}/catalog`
-        )
+      ? buildItemListSchema(catalog.cards, copy.h1, listUrl)
       : null
 
   return (
     <section className="px-4 py-12 sm:px-6 lg:px-8">
       {itemListSchema && (
         <Script
-          id="catalog-itemlist-schema"
+          id={`itemlist-schema-${category}`}
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(itemListSchema) }}
         />
@@ -143,24 +125,20 @@ export default async function CatalogPage({ searchParams }: CatalogPageProps) {
       <div className="mx-auto max-w-7xl">
         <div className="mb-10 text-center">
           <h1 className="mb-4 text-3xl font-bold text-white md:text-4xl">
-            Card Catalog
+            {copy.h1}
           </h1>
-          <p className="mx-auto max-w-3xl text-lg text-slate-300">
-            Live inventory from our eBay store — updated hourly. Filter, search,
-            and buy on eBay with buyer protection.
+          <p className="mx-auto max-w-3xl text-lg leading-relaxed text-slate-300">
+            {copy.intro}
           </p>
         </div>
 
         <Suspense fallback={null}>
-          <CatalogFilters />
+          <CatalogFilters fixedCategory={category} />
         </Suspense>
 
         {loadError ? (
           <div className="rounded-lg border border-red-500/30 bg-red-500/10 p-8 text-center">
             <p className="text-red-300">{loadError}</p>
-            <p className="mt-2 text-sm text-slate-400">
-              Check your eBay credentials in `.env` and try again.
-            </p>
           </div>
         ) : catalog.cards.length === 0 ? (
           <div className="rounded-lg border border-slate-700 bg-slate-800/50 p-12 text-center">

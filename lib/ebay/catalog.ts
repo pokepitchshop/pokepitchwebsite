@@ -61,7 +61,7 @@ const getCachedListingSummaries = unstable_cache(
   }
 )
 
-async function getAllCatalogCards(): Promise<Card[]> {
+export async function getAllCatalogCards(): Promise<Card[]> {
   const summaries = await getCachedListingSummaries()
   return summaries.map(mapSummaryToCard)
 }

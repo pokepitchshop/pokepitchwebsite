@@ -135,6 +135,19 @@
 - Industry news and updates
 - Interactive polls and questions
 
----
+## Post-deploy checklist (Search Console)
 
-**Remember**: SEO is a long-term strategy. Focus on creating valuable content and providing excellent user experience. Results typically take 3-6 months to show significant improvement. 
+After deploying SEO updates:
+
+1. Open [Google Search Console](https://search.google.com/search-console) for `pokepitchshop.com`
+2. Go to **Sitemaps** and submit `https://pokepitchshop.com/sitemap.xml`
+3. Use **URL Inspection** to request indexing for:
+   - `https://pokepitchshop.com/`
+   - `https://pokepitchshop.com/catalog/pokemon`
+   - One product page, e.g. `https://pokepitchshop.com/catalog/ebay-{itemId}`
+   - One blog post, e.g. `https://pokepitchshop.com/blog/how-to-spot-fake-trading-cards`
+4. Monitor **Pages** report over 2–4 weeks for indexed catalog URLs to climb toward ~1,600+
+
+The sitemap is generated dynamically by `app/sitemap.ts` from live eBay inventory and blog posts — no static `public/sitemap.xml` file is required.
+
+---

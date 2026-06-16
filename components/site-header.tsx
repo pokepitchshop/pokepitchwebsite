@@ -18,6 +18,7 @@ const EBAY_STORE_URL = "https://www.ebay.com/str/tnt4sportscards"
 const navLinks = [
   { href: "/#about", label: "About" },
   { href: "/catalog", label: "Catalog" },
+  { href: "/blog", label: "Blog" },
   { href: "/#contact", label: "Contact" },
 ]
 

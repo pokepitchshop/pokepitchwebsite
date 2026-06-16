@@ -4,8 +4,6 @@ on:
   schedule:
     - cron: "0 */6 * * *"
   workflow_dispatch:
-permissions:
-  contents: write
 
 jobs:
   warm-cache:
@@ -36,17 +34,11 @@ jobs:
           })();
           "
 
-      - name: Refresh sitemap
-        run: npm run sync:ebay:sitemap
-
-      - name: Commit sitemap if changed
+      - name: Warm production catalog cache
+        env:
+          EBAY_CLIENT_ID: ${{ secrets.EBAY_CLIENT_ID }}
+          EBAY_CLIENT_SECRET: ${{ secrets.EBAY_CLIENT_SECRET }}
+          EBAY_USER_REFRESH_TOKEN: ${{ secrets.EBAY_USER_REFRESH_TOKEN }}
+          EBAY_ENVIRONMENT: ${{ secrets.EBAY_ENVIRONMENT || 'production' }}
         run: |
-          if git diff --quiet; then
-            echo "No sitemap changes."
-            exit 0
-          fi
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git add public/sitemap.xml
-          git commit -m "chore: refresh sitemap"
-          git push
+          curl -sf "https://pokepitchshop.com/catalog" -o /dev/null || echo "Deploy site URL unreachable; cache warms on next visit."

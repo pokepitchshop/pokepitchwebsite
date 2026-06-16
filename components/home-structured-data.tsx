@@ -1,5 +1,7 @@
 import Script from "next/script"
 import { getFeaturedEbayCards } from "@/lib/ebay/catalog"
+import { upgradeEbayImageUrl } from "@/lib/ebay/image-url"
+import { SITE_URL } from "@/lib/seo/constants"
 
 const EBAY_STORE_URL = "https://www.ebay.com/str/tnt4sportscards"
 
@@ -18,9 +20,9 @@ export async function HomeStructuredData() {
     name: "PokePitchShop",
     description:
       "Your trusted source for authentic Pokemon and sports trading cards",
-    url: "https://pokepitchshop.com",
-    logo: "https://pokepitchshop.com/images/pokepitchshoplogo.png",
-    image: "https://pokepitchshop.com/images/pokepitchshoplogo.png",
+    url: SITE_URL,
+    logo: `${SITE_URL}/images/pokepitchshoplogo.png`,
+    image: `${SITE_URL}/images/pokepitchshoplogo.png`,
     address: {
       "@type": "PostalAddress",
       addressCountry: "US",
@@ -44,7 +46,7 @@ export async function HomeStructuredData() {
           "@type": "Product",
           name: card.name,
           description: card.description,
-          image: card.images[0],
+          image: upgradeEbayImageUrl(card.images[0]) ?? card.images[0],
           offers: {
             "@type": "Offer",
             availability:
@@ -53,7 +55,7 @@ export async function HomeStructuredData() {
                 : "https://schema.org/SoldOut",
             priceCurrency: card.currency,
             price: card.price.toFixed(2),
-            url: card.ebayUrl ?? `https://pokepitchshop.com/catalog/${card.id}`,
+            url: card.ebayUrl ?? `${SITE_URL}/catalog/${card.id}`,
             seller: {
               "@type": "Organization",
               name: "PokePitchShop",

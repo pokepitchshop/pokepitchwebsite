@@ -2,6 +2,7 @@ import type { Metadata } from "next"
 import Link from "next/link"
 import { notFound } from "next/navigation"
 import { ExternalLink } from "lucide-react"
+import Script from "next/script"
 import { CardImage } from "@/components/catalog/card-image"
 import { Badge } from "@/components/ui/badge"
 import {
@@ -13,19 +14,28 @@ import {
   BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb"
 import { Button } from "@/components/ui/button"
-import { Card, CardContent } from "@/components/ui/card"
 import { getEbayCardById } from "@/lib/ebay/catalog"
 import {
   formatPrice,
   getConditionLabel,
   isCardGraded,
 } from "@/lib/inventory"
+import { getCategoryPath } from "@/lib/seo/category-copy"
+import {
+  buildBreadcrumbSchema,
+  buildProductSchema,
+} from "@/lib/seo/product-schema"
 
 export const revalidate = 3600
 export const dynamicParams = true
 
 type CardDetailPageProps = {
   params: Promise<{ id: string }>
+}
+
+function getCategoryLabel(category: string): string {
+  if (category === "mtg") return "Magic: The Gathering"
+  return category.charAt(0).toUpperCase() + category.slice(1)
 }
 
 export async function generateMetadata({
@@ -63,9 +73,20 @@ export default async function CardDetailPage({ params }: CardDetailPageProps) {
   const isSold = card.status === "sold"
   const isGraded = isCardGraded(card)
   const canBuy = !isSold && !!card.ebayUrl
+  const categoryPath = getCategoryPath(card.category)
+  const categoryLabel = getCategoryLabel(card.category)
+  const structuredData = [
+    buildProductSchema(card),
+    buildBreadcrumbSchema(card),
+  ]
 
   return (
     <section className="px-4 py-12 sm:px-6 lg:px-8">
+      <Script
+        id={`product-schema-${card.id}`}
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(structuredData) }}
+      />
       <div className="mx-auto max-w-7xl">
         <Breadcrumb className="mb-8">
           <BreadcrumbList>
@@ -75,6 +96,15 @@ export default async function CardDetailPage({ params }: CardDetailPageProps) {
                 className="text-slate-400 hover:text-white"
               >
                 Catalog
+              </BreadcrumbLink>
+            </BreadcrumbItem>
+            <BreadcrumbSeparator className="text-slate-600" />
+            <BreadcrumbItem>
+              <BreadcrumbLink
+                href={categoryPath}
+                className="text-slate-400 hover:text-white"
+              >
+                {categoryLabel}
               </BreadcrumbLink>
             </BreadcrumbItem>
             <BreadcrumbSeparator className="text-slate-600" />
@@ -166,7 +196,7 @@ export default async function CardDetailPage({ params }: CardDetailPageProps) {
                 className="border-slate-600 bg-transparent text-white hover:bg-slate-700"
                 asChild
               >
-                <Link href="/catalog">Back to Catalog</Link>
+                <Link href={categoryPath}>Browse {categoryLabel}</Link>
               </Button>
             </div>
           </div>

@@ -1,42 +1,8 @@
-import { writeFileSync } from "node:fs"
-import { join } from "node:path"
-import { getDefaultSitemapPath, generateSitemap } from "./ebay/generate-sitemap"
-
 /**
- * Optional maintenance script: refreshes the static sitemap with core pages only.
- * Catalog listings are loaded live from eBay — no bulk inventory.json sync.
+ * Legacy script name kept for npm run sync:ebay compatibility.
+ * Catalog inventory is live from eBay (see lib/ebay/catalog.ts).
+ * Sitemap is generated dynamically at app/sitemap.ts.
  */
-async function main(): Promise<void> {
-  const projectRoot = join(import.meta.dirname, "..")
-  const sitemapPath = getDefaultSitemapPath(projectRoot)
-  const today = new Date().toISOString().slice(0, 10)
-
-  generateSitemap(
-    [
-      {
-        id: "catalog",
-        name: "Catalog",
-        category: "pokemon",
-        set: "",
-        number: "",
-        condition: "available",
-        grade: null,
-        price: 0,
-        currency: "USD",
-        status: "available",
-        images: ["https://pokepitchshop.com/images/pokepitchshoplogo.png"],
-        description: "Browse live eBay inventory on PokePitchShop.",
-        dateAdded: today,
-      },
-    ],
-    sitemapPath
-  )
-
-  console.log(`Updated ${sitemapPath}`)
-  console.log("Catalog inventory is served live from eBay (see lib/ebay/catalog.ts).")
-}
-
-main().catch((error) => {
-  console.error(error instanceof Error ? error.message : error)
-  process.exit(1)
-})
+console.log("Catalog inventory is served live from eBay (lib/ebay/catalog.ts).")
+console.log("Sitemap is generated at runtime (app/sitemap.ts).")
+console.log("No static sync required.")

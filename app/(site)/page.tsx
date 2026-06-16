@@ -155,65 +155,70 @@ export default async function HomePage() {
           </div>
 
           <div className="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
-            <Card className="border-slate-700 bg-slate-800">
-              <CardHeader className="text-center">
-                <Image
-                  src="/images/Pokemon.png"
-                  alt="Pokemon Cards"
-                  width={200}
-                  height={200}
-                  className="mb-4 h-48 w-full rounded-lg object-cover"
-                />
-                <CardTitle className="text-white">Pokemon Cards</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-slate-300">
-                  Rare holographics, vintage cards, modern sets, and everything
-                  in between. We specialize in authentic Pokemon cards from all
-                  generations.
-                </CardDescription>
-              </CardContent>
-            </Card>
+            <Link href="/catalog/pokemon" className="block">
+              <Card className="h-full border-slate-700 bg-slate-800 transition-colors hover:border-yellow-500/50">
+                <CardHeader className="text-center">
+                  <Image
+                    src="/images/Pokemon.png"
+                    alt="Pokemon Cards"
+                    width={200}
+                    height={200}
+                    className="mb-4 h-48 w-full rounded-lg object-cover"
+                  />
+                  <CardTitle className="text-white">Pokemon Cards</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-slate-300">
+                    Rare hologographics, vintage cards, modern sets, and everything
+                    in between. We specialize in authentic Pokemon cards from all
+                    generations.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
 
-            <Card className="border-slate-700 bg-slate-800">
-              <CardHeader className="text-center">
-                <Image
-                  src="/images/sportscards.png"
-                  alt="Sports Cards"
-                  width={200}
-                  height={200}
-                  className="mb-4 h-48 w-full rounded-lg object-cover"
-                />
-                <CardTitle className="text-white">Sports Cards</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-slate-300">
-                  Baseball, football, basketball, and more. From rookie cards to
-                  hall of famers, we carry a wide selection of sports trading
-                  cards.
-                </CardDescription>
-              </CardContent>
-            </Card>
+            <Link href="/catalog/sports" className="block">
+              <Card className="h-full border-slate-700 bg-slate-800 transition-colors hover:border-yellow-500/50">
+                <CardHeader className="text-center">
+                  <Image
+                    src="/images/sportscards.png"
+                    alt="Sports Cards"
+                    width={200}
+                    height={200}
+                    className="mb-4 h-48 w-full rounded-lg object-cover"
+                  />
+                  <CardTitle className="text-white">Sports Cards</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-slate-300">
+                    Baseball, football, basketball, and more. From rookie cards to
+                    hall of famers, we carry a wide selection of sports trading
+                    cards.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
 
-            <Card className="border-slate-700 bg-slate-800">
-              <CardHeader className="text-center">
-                <Image
-                  src="/images/gradedcards.png"
-                  alt="Graded Cards"
-                  width={200}
-                  height={200}
-                  className="mb-4 h-48 w-full rounded-lg object-cover"
-                />
-                <CardTitle className="text-white">Graded Cards</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-slate-300">
-                  PSA, BGS, and other professionally graded cards. Perfect for
-                  serious collectors looking for authenticated, high-grade
-                  specimens.
-                </CardDescription>
-              </CardContent>
-            </Card>
+            <Link href="/catalog/mtg" className="block">
+              <Card className="h-full border-slate-700 bg-slate-800 transition-colors hover:border-yellow-500/50">
+                <CardHeader className="text-center">
+                  <Image
+                    src="/images/gradedcards.png"
+                    alt="Magic: The Gathering Cards"
+                    width={200}
+                    height={200}
+                    className="mb-4 h-48 w-full rounded-lg object-cover"
+                  />
+                  <CardTitle className="text-white">MTG Cards</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-slate-300">
+                    Magic: The Gathering singles and bulk lots from classic sets.
+                    NM condition cards for players and collectors alike.
+                  </CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
           </div>
         </div>
       </section>

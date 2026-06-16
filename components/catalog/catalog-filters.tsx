@@ -13,6 +13,8 @@ import {
   SelectValue,
 } from "@/components/ui/select"
 
+import type { CardCategory } from "@/lib/types/card"
+
 type FilterValues = {
   category: string
   graded: string
@@ -20,14 +22,18 @@ type FilterValues = {
   q: string
 }
 
-export function CatalogFilters() {
+type CatalogFiltersProps = {
+  fixedCategory?: CardCategory
+}
+
+export function CatalogFilters({ fixedCategory }: CatalogFiltersProps = {}) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [, startTransition] = useTransition()
 
   const [filters, setFilters] = useState<FilterValues>({
-    category: searchParams.get("category") ?? "all",
+    category: fixedCategory ?? searchParams.get("category") ?? "all",
     graded: searchParams.get("graded") ?? "all",
     status: searchParams.get("status") ?? "all",
     q: searchParams.get("q") ?? "",
@@ -35,12 +41,12 @@ export function CatalogFilters() {
 
   useEffect(() => {
     setFilters({
-      category: searchParams.get("category") ?? "all",
+      category: fixedCategory ?? searchParams.get("category") ?? "all",
       graded: searchParams.get("graded") ?? "all",
       status: searchParams.get("status") ?? "all",
       q: searchParams.get("q") ?? "",
     })
-  }, [searchParams])
+  }, [fixedCategory, searchParams])
 
   const applyFilters = useCallback(
     (next: Partial<FilterValues>) => {
@@ -48,7 +54,8 @@ export function CatalogFilters() {
       setFilters(merged)
 
       const params = new URLSearchParams()
-      if (merged.category !== "all") params.set("category", merged.category)
+      const category = fixedCategory ?? merged.category
+      if (!fixedCategory && category !== "all") params.set("category", category)
       if (merged.graded !== "all") params.set("graded", merged.graded)
       if (merged.status !== "all") params.set("status", merged.status)
       if (merged.q.trim()) params.set("q", merged.q.trim())
@@ -58,7 +65,7 @@ export function CatalogFilters() {
         router.push(query ? `${pathname}?${query}` : pathname)
       })
     },
-    [filters, pathname, router]
+    [filters, fixedCategory, pathname, router]
   )
 
   return (
@@ -83,25 +90,27 @@ export function CatalogFilters() {
           </div>
         </div>
 
-        <div className="space-y-2">
-          <Label className="text-white">Category</Label>
-          <Select
-            value={filters.category}
-            onValueChange={(value) => applyFilters({ category: value })}
-          >
-            <SelectTrigger className="border-slate-600 bg-slate-700 text-white">
-              <SelectValue placeholder="All categories" />
-            </SelectTrigger>
-            <SelectContent className="border-slate-600 bg-slate-800 text-white">
-              <SelectItem value="all">All categories</SelectItem>
-              <SelectItem value="pokemon">Pokemon</SelectItem>
-              <SelectItem value="sports">Sports</SelectItem>
-              <SelectItem value="mtg">MTG</SelectItem>
-            </SelectContent>
-          </Select>
-        </div>
+        {!fixedCategory && (
+          <div className="space-y-2">
+            <Label className="text-white">Category</Label>
+            <Select
+              value={filters.category}
+              onValueChange={(value) => applyFilters({ category: value })}
+            >
+              <SelectTrigger className="border-slate-600 bg-slate-700 text-white">
+                <SelectValue placeholder="All categories" />
+              </SelectTrigger>
+              <SelectContent className="border-slate-600 bg-slate-800 text-white">
+                <SelectItem value="all">All categories</SelectItem>
+                <SelectItem value="pokemon">Pokemon</SelectItem>
+                <SelectItem value="sports">Sports</SelectItem>
+                <SelectItem value="mtg">MTG</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+        )}
 
-        <div className="space-y-2">
+        <div className={`space-y-2 ${fixedCategory ? "sm:col-span-1" : ""}`}>
           <Label className="text-white">Type</Label>
           <Select
             value={filters.graded}
