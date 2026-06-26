@@ -108,10 +108,19 @@ function parseGrade(text: string): Card["grade"] {
   }
 }
 
+/** YYYY-MM-DD from eBay ListingDetails.StartTime; omit when missing or invalid. */
+export function formatListingDateAdded(startTime?: string): string | undefined {
+  if (!startTime?.trim()) return undefined
+  const parsed = new Date(startTime)
+  if (Number.isNaN(parsed.getTime())) return undefined
+  return parsed.toISOString().slice(0, 10)
+}
+
 /** Fast path: map a listing summary to a catalog card (no GetItem call). */
 export function mapSummaryToCard(summary: ActiveListingSummary): Card {
   const grade = parseGrade(summary.title)
   const category = detectCategoryFromTitle(summary.title)
+  const dateAdded = formatListingDateAdded(summary.startTime)
 
   return {
     id: `ebay-${summary.itemId}`,
@@ -134,7 +143,7 @@ export function mapSummaryToCard(summary: ActiveListingSummary): Card {
     ebayUrl: `https://www.ebay.com/itm/${summary.itemId}`,
     ebayItemId: summary.itemId,
     sku: summary.sku || undefined,
-    dateAdded: new Date().toISOString().slice(0, 10),
+    ...(dateAdded ? { dateAdded } : {}),
   }
 }
 
@@ -311,6 +320,10 @@ export function mapListingToCard(
     override.description ??
     buildDescription(title, specifics, stringValue(item.Description))
   const images = getImages(item, summary)
+  const listingDetails = isRecord(item.ListingDetails) ? item.ListingDetails : null
+  const dateAdded = formatListingDateAdded(
+    summary.startTime ?? stringValue(listingDetails?.StartTime)
+  )
 
   const card: Card = {
     id: `ebay-${itemId}`,
@@ -331,7 +344,7 @@ export function mapListingToCard(
     ebayUrl: `https://www.ebay.com/itm/${itemId}`,
     ebayItemId: itemId,
     sku: summary.sku || stringValue(item.SKU) || undefined,
-    dateAdded: new Date().toISOString().slice(0, 10),
+    ...(dateAdded ? { dateAdded } : {}),
   }
 
   if (variant) card.variant = variant

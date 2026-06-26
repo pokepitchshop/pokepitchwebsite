@@ -31,6 +31,8 @@ export type ActiveListingSummary = {
   currentPrice: number
   listingType: string
   imageUrl?: string
+  /** ISO 8601 listing start from eBay ListingDetails.StartTime */
+  startTime?: string
 }
 
 function isRecord(value: unknown): value is Record<string, unknown> {
@@ -46,6 +48,12 @@ function stringValue(value: unknown): string {
   if (typeof value === "string") return value
   if (typeof value === "number" || typeof value === "boolean") return String(value)
   return ""
+}
+
+function getListingStartTime(item: Record<string, unknown>): string | undefined {
+  const listingDetails = isRecord(item.ListingDetails) ? item.ListingDetails : null
+  const startTime = stringValue(listingDetails?.StartTime).trim()
+  return startTime || undefined
 }
 
 function getImageUrl(item: Record<string, unknown>): string | undefined {
@@ -230,6 +238,7 @@ export class EbayTradingClient {
         currentPrice: priceValue,
         listingType: stringValue(item.ListingType),
         imageUrl: getImageUrl(item),
+        startTime: getListingStartTime(item),
       }
     })
 

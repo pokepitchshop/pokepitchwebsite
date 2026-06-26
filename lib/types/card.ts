@@ -22,7 +22,7 @@ export const cardSchema = z.object({
   ebayUrl: z.string().url().optional(),
   ebayItemId: z.string().optional(),
   sku: z.string().optional(),
-  dateAdded: z.string(),
+  dateAdded: z.string().optional(),
 })
 
 export const inventorySchema = z.array(cardSchema)
