@@ -37,7 +37,7 @@
 1. Go to [Google Analytics](https://analytics.google.com)
 2. Create a new property for pokepitchshop.com
 3. Get your Measurement ID (starts with G-)
-4. Replace `GA_MEASUREMENT_ID` in `app/analytics.tsx` with your actual ID
+4. Replace the Measurement ID in `app/layout.tsx` (gtag `config` call) with your actual ID
 
 ### 3. **Domain & Hosting Setup**
 1. Purchase domain: pokepitchshop.com
