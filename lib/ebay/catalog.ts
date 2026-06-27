@@ -1,4 +1,5 @@
 import { unstable_cache } from "next/cache"
+import { cache } from "react"
 import {
   EbayTradingClient,
   loadEbayConfigFromEnv,
@@ -61,10 +62,10 @@ const getCachedListingSummaries = unstable_cache(
   }
 )
 
-export async function getAllCatalogCards(): Promise<Card[]> {
+export const getAllCatalogCards = cache(async (): Promise<Card[]> => {
   const summaries = await getCachedListingSummaries()
   return summaries.map(mapSummaryToCard)
-}
+})
 
 export type CatalogPageResult = {
   cards: Card[]
