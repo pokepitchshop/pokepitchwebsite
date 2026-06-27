@@ -26,7 +26,7 @@ export default async function HomePage() {
 
   return (
     <>
-      <HomeStructuredData />
+      <HomeStructuredData featuredCards={featuredCards.slice(0, 6)} />
       {/* Hero */}
       <HomeHero featuredCards={featuredCards} />
 
