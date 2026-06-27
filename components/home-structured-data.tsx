@@ -1,19 +1,15 @@
 import Script from "next/script"
-import { getFeaturedEbayCards } from "@/lib/ebay/catalog"
 import { upgradeEbayImageUrl } from "@/lib/ebay/image-url"
 import { SITE_URL } from "@/lib/seo/constants"
+import type { Card } from "@/lib/types/card"
 
 const EBAY_STORE_URL = "https://www.ebay.com/str/tnt4sportscards"
 
-export async function HomeStructuredData() {
-  let featuredCards: Awaited<ReturnType<typeof getFeaturedEbayCards>> = []
+type HomeStructuredDataProps = {
+  featuredCards: Card[]
+}
 
-  try {
-    featuredCards = await getFeaturedEbayCards(6)
-  } catch {
-    featuredCards = []
-  }
-
+export function HomeStructuredData({ featuredCards }: HomeStructuredDataProps) {
   const structuredData = {
     "@context": "https://schema.org",
     "@type": "Store",
