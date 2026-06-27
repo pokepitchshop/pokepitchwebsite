@@ -1,9 +1,9 @@
 import Image from "next/image"
 import Link from "next/link"
-import { ExternalLink, Package, Star, Users } from "lucide-react"
+import { Package, Star, Users } from "lucide-react"
 import { CardTile } from "@/components/catalog/card-tile"
 import { ContactForm } from "@/components/contact-form"
-import { Badge } from "@/components/ui/badge"
+import { HomeHero } from "@/components/home/home-hero"
 import { Button } from "@/components/ui/button"
 import {
   Card,
@@ -15,13 +15,11 @@ import {
 import { getFeaturedEbayCards } from "@/lib/ebay/catalog"
 import { HomeStructuredData } from "@/components/home-structured-data"
 
-const EBAY_STORE_URL = "https://www.ebay.com/str/tnt4sportscards"
-
 export default async function HomePage() {
   let featuredCards: Awaited<ReturnType<typeof getFeaturedEbayCards>> = []
 
   try {
-    featuredCards = await getFeaturedEbayCards(6)
+    featuredCards = await getFeaturedEbayCards(12)
   } catch {
     featuredCards = []
   }
@@ -30,46 +28,7 @@ export default async function HomePage() {
     <>
       <HomeStructuredData />
       {/* Hero */}
-      <section className="relative px-4 py-20 sm:px-6 lg:px-8">
-        <div className="mx-auto max-w-7xl text-center">
-          <Badge className="mb-4 border-yellow-500/30 bg-yellow-500/20 text-yellow-400">
-            Trading Card Experts
-          </Badge>
-          <h1 className="mb-6 text-4xl font-bold text-white md:text-6xl">
-            Your Trusted Source for
-            <span className="block text-yellow-400">Trading Cards</span>
-          </h1>
-          <p className="mx-auto mb-8 max-w-3xl text-xl text-slate-300">
-            Welcome to PokePitchShop! We&apos;re passionate trading card experts
-            dedicated to bringing you the finest Pokemon and sports cards. From
-            rare finds to everyday favorites, we&apos;ve got your collection covered.
-          </p>
-          <div className="flex flex-col justify-center gap-4 sm:flex-row">
-            <Button
-              size="lg"
-              className="bg-yellow-500 font-semibold text-slate-900 hover:bg-yellow-600"
-              asChild
-            >
-              <Link href="/catalog">Browse Catalog</Link>
-            </Button>
-            <Button
-              size="lg"
-              variant="outline"
-              className="border-slate-600 bg-transparent text-white hover:bg-slate-700"
-              asChild
-            >
-              <a
-                href={EBAY_STORE_URL}
-                target="_blank"
-                rel="noopener noreferrer"
-              >
-                <ExternalLink className="mr-2 h-5 w-5" />
-                Visit Our eBay Store
-              </a>
-            </Button>
-          </div>
-        </div>
-      </section>
+      <HomeHero featuredCards={featuredCards} />
 
       {/* About */}
       <section id="about" className="bg-slate-800/50 px-4 py-20 sm:px-6 lg:px-8">
@@ -238,7 +197,7 @@ export default async function HomePage() {
 
           {featuredCards.length > 0 ? (
             <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-              {featuredCards.map((card) => (
+              {featuredCards.slice(0, 6).map((card) => (
                 <CardTile key={card.id} card={card} />
               ))}
             </div>
