@@ -62,9 +62,20 @@ const getCachedListingSummaries = unstable_cache(
   }
 )
 
-export const getAllCatalogCards = cache(async (): Promise<Card[]> => {
+const getCatalogCardMap = cache(async (): Promise<Map<string, Card>> => {
   const summaries = await getCachedListingSummaries()
-  return summaries.map(mapSummaryToCard)
+  const map = new Map<string, Card>()
+
+  for (const summary of summaries) {
+    const card = mapSummaryToCard(summary)
+    map.set(card.id, card)
+  }
+
+  return map
+})
+
+export const getAllCatalogCards = cache(async (): Promise<Card[]> => {
+  return Array.from((await getCatalogCardMap()).values())
 })
 
 export type CatalogPageResult = {
@@ -101,8 +112,8 @@ export async function getCatalogPage(
 }
 
 export async function getEbayCardById(id: string): Promise<Card | undefined> {
-  const allCards = await getAllCatalogCards()
-  return allCards.find((card) => card.id === id)
+  const map = await getCatalogCardMap()
+  return map.get(id)
 }
 
 export async function getFeaturedEbayCards(limit = 6): Promise<Card[]> {
